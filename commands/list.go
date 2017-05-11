@@ -1,13 +1,14 @@
 package commands
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/andefined/twitterfarm/utils"
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
@@ -16,15 +17,10 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all projects",
 	Long:  ``,
-	PreRun: func(cmd *cobra.Command, args []string) {
-		fmt.Print("\n")
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		l := log.New(os.Stdout, "[TwitterFarm] ", log.Ldate|log.Ltime)
-
 		home, err := homedir.Dir()
 		if err != nil {
-			l.Fatal(err)
+			log.Fatal(err)
 		}
 
 		path := home + "/.twitterfarm"
@@ -39,21 +35,30 @@ var listCmd = &cobra.Command{
 				if err != nil {
 					return err
 				}
+				if f.IsDir() {
+					return nil
+				}
 				select {
 				case paths <- p:
 				}
 				return nil
 			})
 		})()
-		fmt.Print("ID         NAME \tKEYWORDS\n")
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"ID", "PID", "NAME", "STATUS", "KEYWORDS"})
+
 		for p := range paths {
 			var c = utils.Project{}
 			c.ReadFile(p)
-			fmt.Printf("%s %s \t%s \n", c.ID, c.Name, c.Keyword)
-			// l.Print(p)
+			status := "stopped"
+			if c.PID > 0 {
+				status = "running"
+			}
+			table.Append([]string{c.ID, strconv.Itoa(c.PID), c.Name, status, c.Keyword})
 		}
 
-		fmt.Print("\n")
+		table.Render()
 	},
 }
 

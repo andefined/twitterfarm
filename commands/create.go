@@ -21,11 +21,7 @@ var (
 		Use:   "create",
 		Short: "Create a new project",
 		Long:  ``,
-		PreRun: func(cmd *cobra.Command, args []string) {
-			fmt.Print("\n")
-		},
 		Run: func(cmd *cobra.Command, args []string) {
-			l := log.New(os.Stdout, "[TwitterFarm] ", log.Ldate|log.Ltime)
 			project := utils.Project{
 				ID:                 utils.ID(5),
 				Name:               viper.GetString("name"),
@@ -37,6 +33,7 @@ var (
 				ElasticsearchIndex: viper.GetString("elasticsearch-index"),
 				Keyword:            viper.GetString("keyword"),
 				DateCreated:        time.Now(),
+				PID:                0,
 			}
 
 			if project.Name == "" {
@@ -44,11 +41,13 @@ var (
 			}
 
 			if project.ConsumerKey == "" || project.ConsumerSecret == "" || project.AccessToken == "" || project.AccessTokenSecret == "" {
-				l.Fatal("Consumer key/secret and Access token/secret required")
+				cmd.HelpFunc()(cmd, args)
+				return
 			}
 
 			if project.ElasticsearchHost == "" {
-				l.Fatal("Elasticsearch Host required")
+				cmd.HelpFunc()(cmd, args)
+				return
 			}
 
 			if project.ElasticsearchIndex == "" {
@@ -56,17 +55,18 @@ var (
 			}
 
 			if project.Keyword == "" {
-				l.Fatal("Keyword required")
+				cmd.HelpFunc()(cmd, args)
+				return
 			}
 
 			y, err := yaml.Marshal(project)
 			if err != nil {
-				l.Fatal(err)
+				log.Fatal(err)
 			}
 
 			home, err := homedir.Dir()
 			if err != nil {
-				l.Fatal(err)
+				log.Fatal(err)
 			}
 
 			path := home + "/.twitterfarm"
@@ -74,17 +74,17 @@ var (
 				os.Mkdir(path, os.ModePerm)
 			}
 
-			config := path + "/" + project.Name + ".yml"
+			config := path + "/" + project.ID + ".yml"
 			if _, err = os.Stat(config); err == nil {
-				l.Fatalf("Project `%s` allready exists\n", project.Name)
+				log.Fatalf("Project `%s` allready exists\n", project.Name)
 			}
 
 			err = utils.CreateFile(config, y)
 			if err != nil {
-				l.Fatalf("An error occured while saving `%s`\n", project.Name)
+				log.Fatalf("An error occured while saving `%s`\n", project.Name)
 			}
-			l.Printf("Project `%s` created`", project.ID)
-			l.Printf("You can start by running `twitterfarm run %s`\n\n", project.Name)
+
+			fmt.Printf("Project created: %s\n", project.ID)
 		},
 	}
 )

@@ -20,8 +20,9 @@ type Project struct {
 	AccessTokenSecret  string    `json:"access-token-secret" yaml:"access-token-secret"`
 	ElasticsearchHost  string    `json:"elasticsearch-host" yaml:"elasticsearch-host"`
 	ElasticsearchIndex string    `json:"elasticsearch-index" yaml:"elasticsearch-index"`
-	Keyword            string    `json:"keyword" yaml:"keyword"`
+	Keywords           string    `json:"keyword" yaml:"keyword"`
 	DateCreated        time.Time `json:"date-created" yaml:"date-created"`
+	PID                int       `json:"pid" yaml:"pid"`
 }
 
 // ID : Generate Id String
