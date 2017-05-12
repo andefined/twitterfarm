@@ -3,10 +3,10 @@ language: go
 go:
     - 1.7
     - tip
-install:
+before_script:
     - go get -t -v ./...
 script:
-    - "./build.sh"
+    - go vet -v ./...
 deploy:
     provider: releases
     skip_cleanup: true
