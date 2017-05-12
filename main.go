@@ -3,12 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
-	"github.com/andefined/twitterfarm/utils"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/andefined/twitterfarm/commands"
 	"github.com/urfave/cli"
 )
 
@@ -20,74 +16,9 @@ func main() {
 	app.Usage = "Quickly collect data from Twitter Streaming API"
 	app.Commands = []cli.Command{
 		{
-			Name:  "create",
-			Usage: "Create a new project",
-			Action: func(c *cli.Context) error {
-				project := utils.Project{
-					ID:                 utils.ID(5),
-					Name:               c.String("name"),
-					ConsumerKey:        c.String("consumer-key"),
-					ConsumerSecret:     c.String("consumer-secret"),
-					AccessToken:        c.String("access-token"),
-					AccessTokenSecret:  c.String("access-token-secret"),
-					ElasticsearchHost:  c.String("elasticsearch-host"),
-					ElasticsearchIndex: c.String("elasticsearch-index"),
-					Keywords:           c.String("keywords"),
-					DateCreated:        time.Now(),
-					PID:                0,
-				}
-				if project.Name == "" {
-					project.Name = project.ID
-				}
-
-				if project.ConsumerKey == "" || project.ConsumerSecret == "" || project.AccessToken == "" || project.AccessTokenSecret == "" {
-					cli.ShowSubcommandHelp(c)
-					os.Exit(1)
-				}
-
-				if project.ElasticsearchHost == "" {
-					cli.ShowSubcommandHelp(c)
-					os.Exit(1)
-				}
-
-				if project.ElasticsearchIndex == "" {
-					project.ElasticsearchIndex = "twitterfarm" + "-" + project.Name + "-" + project.ID
-				}
-
-				if project.Keywords == "" {
-					cli.ShowSubcommandHelp(c)
-					os.Exit(1)
-				}
-
-				y, err := yaml.Marshal(project)
-				if err != nil {
-					return err
-				}
-
-				home, err := homedir.Dir()
-				if err != nil {
-					return err
-				}
-
-				path := home + "/.twitterfarm"
-				if _, err = os.Stat(path); os.IsNotExist(err) {
-					os.Mkdir(path, os.ModePerm)
-				}
-
-				config := path + "/" + project.ID + ".yml"
-				if _, err = os.Stat(config); err == nil {
-					return err
-				}
-
-				err = utils.CreateFile(config, y)
-				if err != nil {
-					return err
-				}
-
-				fmt.Printf("Project created: %s\n", project.ID)
-
-				return nil
-			},
+			Name:   "create",
+			Usage:  "Create a new project",
+			Action: commands.Create,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "name, n",
@@ -125,10 +56,22 @@ func main() {
 		},
 
 		{
-			Name:  "list",
-			Usage: "List all projects",
-			Action: func(c *cli.Context) error {
-				return nil
+			Name:   "list",
+			Usage:  "List all projects",
+			Action: commands.List,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "name, n",
+					Usage: "Project name",
+				},
+				cli.StringFlag{
+					Name:  "id, i",
+					Usage: "Project id",
+				},
+				cli.BoolFlag{
+					Name:  "quiet, q",
+					Usage: "Print only ID",
+				},
 			},
 		},
 
@@ -136,15 +79,20 @@ func main() {
 			Name:  "run",
 			Usage: "Run a project",
 			Action: func(c *cli.Context) error {
+				fmt.Fprintf(c.App.Writer, "brace for impact\n")
 				return nil
 			},
 		},
 
 		{
-			Name:  "remove",
-			Usage: "Remove a project",
-			Action: func(c *cli.Context) error {
-				return nil
+			Name:   "remove",
+			Usage:  "Remove a project",
+			Action: commands.Remove,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "all, a",
+					Usage: "Remove all projects",
+				},
 			},
 		},
 	}

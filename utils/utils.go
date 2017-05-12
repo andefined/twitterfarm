@@ -7,6 +7,8 @@ import (
 	"os"
 	"time"
 
+	homedir "github.com/mitchellh/go-homedir"
+
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -53,15 +55,30 @@ func CreateFile(path string, content []byte) error {
 }
 
 // ReadFile ...
-func (c *Project) ReadFile(path string) *Project {
+func ReadFile(path string) (*Project, error) {
+	c := &Project{}
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil
+		return c, nil
 	}
 	err = yaml.Unmarshal(yamlFile, c)
 	if err != nil {
-		return nil
+		return c, nil
 	}
 
-	return c
+	return c, nil
+}
+
+// GetHomeDir : Return $HOME Directory or Error
+func GetHomeDir() (string, error) {
+	home, err := homedir.Dir()
+	if err != nil {
+		return "", err
+	}
+
+	path := home + "/.twitterfarm"
+	if _, err = os.Stat(path); os.IsNotExist(err) {
+		os.Mkdir(path, os.ModePerm)
+	}
+	return path, nil
 }

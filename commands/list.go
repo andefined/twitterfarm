@@ -1,67 +1,76 @@
 package commands
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strconv"
 
 	"github.com/andefined/twitterfarm/utils"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/olekukonko/tablewriter"
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli"
 )
 
-// listCmd represents the list command
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all projects",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		home, err := homedir.Dir()
-		if err != nil {
-			log.Fatal(err)
-		}
+// List ...
+func List(c *cli.Context) error {
+	path, err := utils.GetHomeDir()
+	if err != nil {
+		return err
+	}
 
-		path := home + "/.twitterfarm"
-		if _, err = os.Stat(path); os.IsNotExist(err) {
-			os.Mkdir(path, os.ModePerm)
-		}
-
-		paths := make(chan string, 100)
-		go (func() error {
-			defer close(paths)
-			return filepath.Walk(path, func(p string, f os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-				if f.IsDir() {
-					return nil
-				}
-				select {
-				case paths <- p:
-				}
-				return nil
-			})
-		})()
-
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"ID", "PID", "NAME", "STATUS", "KEYWORDS"})
-
-		for p := range paths {
-			var c = utils.Project{}
-			c.ReadFile(p)
-			status := "stopped"
-			if c.PID > 0 {
-				status = "running"
+	paths := make(chan string, 100)
+	go (func() error {
+		defer close(paths)
+		return filepath.Walk(path, func(p string, f os.FileInfo, err error) error {
+			if err != nil {
+				return err
 			}
-			table.Append([]string{c.ID, strconv.Itoa(c.PID), c.Name, status, c.Keyword})
-		}
+			if f.IsDir() {
+				return nil
+			}
+			select {
+			case paths <- p:
+			}
+			return nil
+		})
+	})()
 
-		table.Render()
-	},
+	if c.Bool("quiet") {
+		renderIDs(paths)
+	} else {
+		renderTable(paths)
+	}
+
+	return nil
 }
 
-func init() {
-	RootCmd.AddCommand(listCmd)
+func renderIDs(paths chan string) {
+	for path := range paths {
+		project, err := utils.ReadFile(path)
+		if err != nil {
+			fmt.Print(err)
+		} else {
+			fmt.Printf("%s\n", project.ID)
+		}
+	}
+}
+
+func renderTable(paths chan string) {
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "PID", "NAME", "STATUS", "KEYWORDS"})
+	for path := range paths {
+		project, err := utils.ReadFile(path)
+		if err != nil {
+			fmt.Print(err)
+		} else {
+			status := "stopped"
+			if project.PID > 0 {
+				status = "running"
+			}
+			table.Append([]string{project.ID, strconv.Itoa(project.PID), project.Name, status, project.Keywords})
+		}
+	}
+
+	table.Render()
+
 }

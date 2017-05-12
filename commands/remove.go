@@ -3,29 +3,32 @@ package commands
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli"
 )
 
-// removeCmd represents the remove command
-var removeCmd = &cobra.Command{
-	Use:   "remove",
-	Short: "Remove a project",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("remove called")
-	},
+// Remove ...
+func Remove(c *cli.Context) error {
+	// c.App.Run([]string{"app", "list", "--quiet"})
+	if c.String("name") != "" {
+		fmt.Print(c.String("name"))
+	}
+	if c.String("id") != "" {
+		fmt.Print(c.String("id"))
+	}
+	if c.Bool("all") {
+		fmt.Printf("%#v\n", c.Bool("all"))
+	}
+	return nil
 }
 
-func init() {
-	RootCmd.AddCommand(removeCmd)
+func removeByName(name string) error {
+	return nil
+}
 
-	// Here you will define your flags and configuration settings.
+func removeByID(id string) error {
+	return nil
+}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// removeCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// removeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+func removeAll() error {
+	return nil
 }
