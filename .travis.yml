@@ -1,8 +1,15 @@
 language: go
-
 go:
-    - 1.7
-    - 1.8
-
+- 1.7
+- master
+install:
+- go get -d -v ./...
 script:
-    - travis_wait 20 go vet -p 10 -timeout 20m -v ./...;
+- "./build.sh"
+deploy:
+  provider: releases
+  api_key:
+    secure: $GITHUB_TOKEN
+  file: bin/twitterfarm
+  on:
+    repo: andefined/twitterfarm
