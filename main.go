@@ -11,7 +11,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "twitterfarm"
 	app.Version = "0.0.1"
-	app.Usage = "Quickly collect data from Twitter Streaming API"
+	app.Usage = "Collect data from Twitter"
 	app.Commands = []cli.Command{
 		{
 			Name:   "create",
@@ -40,7 +40,7 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-host, e",
-					Usage: "Comma Seperated Hosts (ex. `http://elastic:changeme@host-a:9200,http://elastic:changeme@host-b:9200`)",
+					Usage: "Comma Separated Hosts (ex. `http://elastic:changeme@host-a:9200,http://elastic:changeme@host-b:9200`)",
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-index, i",

@@ -29,9 +29,7 @@ func Run(c *cli.Context) error {
 	project := utils.ReadFile(config)
 	fmt.Printf("%s\n", project.ID)
 
-	// cmd := exec.Command("twitterfarm", "exec", config)
-	// cmd := exec.Command("bash", "/home/andefined/go/src/github.com/andefined/twitterfarm/test.sh")
-	cmd := exec.Command("go", "run", "/home/andefined/go/src/github.com/andefined/twitterfarm/main.go", "exec", config)
+	cmd := exec.Command("twitterfarm", "exec", config)
 	cmd.Stdin = strings.NewReader("some input")
 	var out bytes.Buffer
 	cmd.Stdout = &out
