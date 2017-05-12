@@ -49,14 +49,9 @@ GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 ```
-##### Help menu
-```bash
-twitterfarm --help
-```
 
 ##### Create a project
 ```bash
-twitterfarm create --help
 twitterfarm create \
     --name "Trump" \
     --keywords "Trump, giant douche" \
@@ -70,20 +65,22 @@ twitterfarm create \
 
 ##### List all projects
 ```bash
-twitterfarm list --help
 twitterfarm list
+# or
 twitterfarm list --quiet
 ```
 
 ##### Test a project
 ```bash
 twitterfarm test $PROJECT_ID
+# or
 twitterfarm test $PROJECT_ID --fix
 ```
 
 ##### Remove projects
 ```bash
 twitterfarm remove $PROJECT_ID
+# or
 twitterfarm remove --all
 ```
 
