@@ -8,6 +8,7 @@ before_script:
 script:
     - go vet -v ./...
 deploy:
+    overwrite: true
     provider: releases
     skip_cleanup: true
     api_key:
