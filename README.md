@@ -26,6 +26,29 @@ go install github.com/andefined/twitterfarm
 ```
 
 #### How to use
+```
+NAME:
+   twitterfarm - Collect data from Twitter
+
+USAGE:
+   twitterfarm [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.1
+
+COMMANDS:
+     create   Create a new project
+     list     List all projects
+     test     Test project configuration, connections etc..
+     remove   Remove a project
+     run      Run a project
+     exec     Execute a project
+     help, h  Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+```
 ##### Help menu
 ```bash
 twitterfarm --help
