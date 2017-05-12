@@ -40,11 +40,11 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-host, e",
-					Usage: "Comma Seperated Hosts (ex. `user:pass@es-1.clu:9200,user:pass@es-2.clu:9200`)",
+					Usage: "Comma Seperated Hosts (ex. `http://elastic:changeme@host-a:9200,http://elastic:changeme@host-b:9200`)",
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-index, i",
-					Usage: "Elasticsearch Index",
+					Usage: "Elasticsearch Index (Default Lowercase: twitterfarm_${project_nane}_${project_id})",
 				},
 				cli.StringFlag{
 					Name:  "keywords, k",
@@ -61,6 +61,18 @@ func main() {
 				cli.BoolFlag{
 					Name:  "quiet, q",
 					Usage: "Print only ID",
+				},
+			},
+		},
+
+		{
+			Name:   "test",
+			Usage:  "Test project configuration, connections etc..",
+			Action: commands.Test,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "fix, f",
+					Usage: "Try to fix errors (ex. create the index)",
 				},
 			},
 		},

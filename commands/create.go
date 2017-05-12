@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	yaml "gopkg.in/yaml.v2"
@@ -42,7 +43,7 @@ func Create(c *cli.Context) error {
 	}
 
 	if project.ElasticsearchIndex == "" {
-		project.ElasticsearchIndex = "twitterfarm" + "-" + project.Name + "-" + project.ID
+		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + project.Name + "_" + project.ID)
 	}
 
 	if project.Keywords == "" {

@@ -1,13 +1,15 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	elastic "gopkg.in/olivere/elastic.v5"
 
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/dghubble/go-twitter/twitter"
@@ -23,11 +25,18 @@ func Exec(c *cli.Context) {
 	config := c.Args().Get(0)
 	project := utils.ReadFile(config)
 
+	ctx := context.Background()
+	esclient, err := elastic.NewClient(elastic.SetURL(project.ElasticsearchHost))
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
 	consumer := oauth1.NewConfig(project.ConsumerKey, project.ConsumerSecret)
 	token := oauth1.NewToken(project.AccessToken, project.AccessTokenSecret)
 	httpClient := consumer.Client(oauth1.NoContext, token)
 
-	if !TwitterConnectionEstablished(httpClient) {
+	if !utils.TwitterConnectionEstablished(httpClient) {
 		log.Fatal("Unable to connect with Twitter Streaming API")
 		os.Exit(1)
 	}
@@ -37,6 +46,12 @@ func Exec(c *cli.Context) {
 	demux.Tweet = func(tweet *twitter.Tweet) {
 		// out, _ := json.Marshal(tweet)
 		// fmt.Println(string(out))
+		t := tweet
+		_, err = esclient.Index().Index(strings.ToLower(project.ElasticsearchIndex)).Type("tweet").BodyJson(t).Refresh("true").Do(ctx)
+		if err != nil {
+			log.Fatal(err)
+			panic(err)
+		}
 	}
 	filterParams := &twitter.StreamFilterParams{
 		Track:         strings.Split(project.Keywords, ","),
@@ -58,20 +73,4 @@ func Exec(c *cli.Context) {
 
 	fmt.Println("Stopping Stream...")
 	stream.Stop()
-}
-
-// TwitterConnectionEstablished ...
-func TwitterConnectionEstablished(httpClient *http.Client) bool {
-	resp, err := httpClient.Get("https://api.twitter.com/1.1/search/tweets.json")
-	if err != nil {
-		log.Fatal(err)
-		return false
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode > 400 {
-		return false
-	}
-
-	return true
 }

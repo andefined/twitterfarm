@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"time"
 
@@ -90,4 +91,19 @@ func GetHomeDir() (string, error) {
 		os.Mkdir(path, os.ModePerm)
 	}
 	return path, nil
+}
+
+// TwitterConnectionEstablished ...
+func TwitterConnectionEstablished(httpClient *http.Client) bool {
+	resp, err := httpClient.Get("https://api.twitter.com/1.1/search/tweets.json")
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode > 400 {
+		return false
+	}
+
+	return true
 }
