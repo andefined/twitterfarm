@@ -1,21 +1,54 @@
 package commands
 
 import (
+	"bytes"
 	"fmt"
+	"log"
+	"os/exec"
+	"strings"
 
-	"github.com/spf13/cobra"
+	yaml "gopkg.in/yaml.v2"
+
+	"github.com/andefined/twitterfarm/utils"
+	"github.com/urfave/cli"
 )
 
-// runCmd represents the run command
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run a project",
-	Long:  ``,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
-	},
-}
+// Run ...
+func Run(c *cli.Context) error {
+	if c.Args().Get(0) == "" {
+		cli.ShowSubcommandHelp(c)
+		return nil
+	}
 
-func init() {
-	RootCmd.AddCommand(runCmd)
+	home, err := utils.GetHomeDir()
+	if err != nil {
+		return err
+	}
+
+	config := home + "/" + c.Args().Get(0) + ".yml"
+	project := utils.ReadFile(config)
+	fmt.Printf("%s\n", project.ID)
+
+	// cmd := exec.Command("twitterfarm", "exec", config)
+	// cmd := exec.Command("bash", "/home/andefined/go/src/github.com/andefined/twitterfarm/test.sh")
+	cmd := exec.Command("go", "run", "/home/andefined/go/src/github.com/andefined/twitterfarm/main.go", "exec", config)
+	cmd.Stdin = strings.NewReader("some input")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Start()
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	project.PID = cmd.Process.Pid
+
+	y, err := yaml.Marshal(project)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+
+	utils.SaveFile(config, y)
+
+	return nil
 }

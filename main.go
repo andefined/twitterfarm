@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/andefined/twitterfarm/commands"
@@ -12,7 +11,6 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "twitterfarm"
 	app.Version = "0.0.1"
-	app.EnableBashCompletion = true
 	app.Usage = "Quickly collect data from Twitter Streaming API"
 	app.Commands = []cli.Command{
 		{
@@ -60,27 +58,10 @@ func main() {
 			Usage:  "List all projects",
 			Action: commands.List,
 			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "name, n",
-					Usage: "Project name",
-				},
-				cli.StringFlag{
-					Name:  "id, i",
-					Usage: "Project id",
-				},
 				cli.BoolFlag{
 					Name:  "quiet, q",
 					Usage: "Print only ID",
 				},
-			},
-		},
-
-		{
-			Name:  "run",
-			Usage: "Run a project",
-			Action: func(c *cli.Context) error {
-				fmt.Fprintf(c.App.Writer, "brace for impact\n")
-				return nil
 			},
 		},
 
@@ -94,6 +75,18 @@ func main() {
 					Usage: "Remove all projects",
 				},
 			},
+		},
+
+		{
+			Name:   "run",
+			Usage:  "Run a project",
+			Action: commands.Run,
+		},
+
+		{
+			Name:   "exec",
+			Usage:  "Execute a project",
+			Action: commands.Exec,
 		},
 	}
 	app.Run(os.Args)

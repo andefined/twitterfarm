@@ -55,12 +55,12 @@ func Create(c *cli.Context) error {
 		return err
 	}
 
-	path, err := utils.GetHomeDir()
+	home, err := utils.GetHomeDir()
 	if err != nil {
 		return err
 	}
 
-	config := path + "/" + project.ID + ".yml"
+	config := home + "/" + project.ID + ".yml"
 	if _, err = os.Stat(config); err == nil {
 		return err
 	}
@@ -70,7 +70,6 @@ func Create(c *cli.Context) error {
 		return err
 	}
 
-	fmt.Printf("Project created: %s\n", project.ID)
-
+	fmt.Printf("%s\n", project.ID)
 	return nil
 }

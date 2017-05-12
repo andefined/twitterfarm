@@ -55,18 +55,27 @@ func CreateFile(path string, content []byte) error {
 }
 
 // ReadFile ...
-func ReadFile(path string) (*Project, error) {
+func ReadFile(path string) *Project {
 	c := &Project{}
 	yamlFile, err := ioutil.ReadFile(path)
 	if err != nil {
-		return c, nil
+		return c
 	}
 	err = yaml.Unmarshal(yamlFile, c)
 	if err != nil {
-		return c, nil
+		return c
 	}
 
-	return c, nil
+	return c
+}
+
+// SaveFile ...
+func SaveFile(path string, content []byte) error {
+	err := ioutil.WriteFile(path, content, 0644)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetHomeDir : Return $HOME Directory or Error
