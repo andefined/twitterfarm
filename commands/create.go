@@ -43,7 +43,7 @@ func Create(c *cli.Context) error {
 	}
 
 	if project.ElasticsearchIndex == "" {
-		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + project.Name + "_" + project.ID)
+		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + strings.Replace(project.Name, " ", "_", -1) + "_" + project.ID)
 	}
 
 	if project.Keywords == "" {
