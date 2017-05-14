@@ -2,12 +2,10 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
-
-	yaml "gopkg.in/yaml.v2"
+	"syscall"
 
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/olekukonko/tablewriter"
@@ -16,11 +14,7 @@ import (
 
 // List ...
 func List(c *cli.Context) error {
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return err
-	}
-
+	home := utils.GetHomeDir()
 	paths := make(chan string, 100)
 	go (func() error {
 		defer close(paths)
@@ -49,7 +43,7 @@ func List(c *cli.Context) error {
 
 func renderIDs(paths chan string) {
 	for path := range paths {
-		project := utils.ReadFile(path)
+		project := utils.ReadProject(path)
 		fmt.Printf("%s\n", project.ID)
 	}
 }
@@ -57,25 +51,18 @@ func renderIDs(paths chan string) {
 func renderTable(paths chan string) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetHeader([]string{"ID", "PID", "NAME", "STATUS", "KEYWORDS"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.SetAutoWrapText(false)
 	for path := range paths {
-		project := utils.ReadFile(path)
+		project := utils.ReadProject(path)
 		status := "stopped"
 		if project.PID > 0 {
 			status = "running"
 		}
-		proc, err := os.FindProcess(project.PID)
-		if err != nil {
-			project.PID = 0
-			status = "stopped"
-			y, err := yaml.Marshal(project)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			utils.SaveFile(path, y)
-		}
-		fmt.Print(proc.Pid)
-		table.Append([]string{project.ID, strconv.Itoa(project.PID), project.Name, status, project.Keywords})
+		proc, _ := os.FindProcess(project.PID)
+		testproc := proc.Signal(syscall.Signal(0))
+		table.Append([]string{project.ID, testproc.Error() + " (" + strconv.Itoa(project.PID) + ")", project.Name, status, project.Keywords})
 	}
 
 	table.Render()

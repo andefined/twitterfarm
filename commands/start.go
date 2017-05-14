@@ -20,20 +20,15 @@ func Start(c *cli.Context) error {
 		return nil
 	}
 
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return err
-	}
-
-	config := home + "/" + c.Args().Get(0) + ".yml"
-	project := utils.ReadFile(config)
+	config := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
+	project := utils.ReadProject(config)
 	fmt.Printf("%s\n", project.ID)
 
 	cmd := exec.Command("twitterfarm", "exec", config)
-	cmd.Stdin = strings.NewReader("some input")
+	cmd.Stdin = strings.NewReader("")
 	var out bytes.Buffer
 	cmd.Stdout = &out
-	err = cmd.Start()
+	err := cmd.Start()
 	if err != nil {
 		log.Fatal(err)
 		return err

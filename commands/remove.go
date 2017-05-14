@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"syscall"
 
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/urfave/cli"
@@ -31,26 +32,15 @@ func Remove(c *cli.Context) error {
 }
 
 func removeByID(id string) (string, error) {
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return "", err
-	}
-
-	config := home + "/" + id + ".yml"
-	project := utils.ReadFile(config)
-
+	config := utils.GetHomeDir() + "/" + id + ".yml"
+	project := utils.ReadProject(config)
 	kill(project.PID)
 	delete(config)
-
 	return id, nil
 }
 
 func removeAll() (string, error) {
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return "", err
-	}
-
+	home := utils.GetHomeDir()
 	paths := make(chan string, 100)
 	go (func() error {
 		defer close(paths)
@@ -69,7 +59,7 @@ func removeAll() (string, error) {
 	})()
 
 	for path := range paths {
-		project := utils.ReadFile(path)
+		project := utils.ReadProject(path)
 		removeByID(project.ID)
 	}
 
@@ -87,13 +77,16 @@ func delete(path string) error {
 
 func kill(pid int) error {
 	if pid <= 1 {
-		fmt.Printf("Can't find process: %x exiting\n", pid)
 		return nil
 	}
 	proc, err := os.FindProcess(pid)
 	if err != nil {
-		return err
+		fmt.Printf("Failed to find process: %d\n", pid)
+	} else {
+		err := proc.Signal(syscall.Signal(0))
+		fmt.Printf("process.Signal on pid %d returned: %v\n", pid, err)
 	}
+
 	proc.Kill()
 	return nil
 }

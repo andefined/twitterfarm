@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"os"
+	"log"
 	"strings"
 	"time"
 
@@ -15,7 +15,7 @@ import (
 
 // Create ...
 func Create(c *cli.Context) error {
-	project := utils.Project{
+	p := utils.Project{
 		ID:                 utils.ID(5),
 		Name:               c.String("name"),
 		ConsumerKey:        c.String("consumer-key"),
@@ -29,44 +29,32 @@ func Create(c *cli.Context) error {
 		PID:                0,
 	}
 
-	if project.ConsumerKey == "" ||
-		project.ConsumerSecret == "" ||
-		project.AccessToken == "" ||
-		project.AccessTokenSecret == "" ||
-		project.ElasticsearchHost == "" ||
-		project.Keywords == "" {
+	if p.ConsumerKey == "" ||
+		p.ConsumerSecret == "" ||
+		p.AccessToken == "" ||
+		p.AccessTokenSecret == "" ||
+		p.ElasticsearchHost == "" ||
+		p.Keywords == "" {
 		cli.ShowSubcommandHelp(c)
 		return nil
 	}
 
-	if project.Name == "" {
-		project.Name = project.ID
+	if p.Name == "" {
+		p.Name = p.ID
 	}
 
-	if project.ElasticsearchIndex == "" {
-		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + project.ID)
+	if p.ElasticsearchIndex == "" {
+		p.ElasticsearchIndex = strings.ToLower("twitterfarm_" + p.ID)
 	}
 
-	y, err := yaml.Marshal(project)
+	y, err := yaml.Marshal(p)
 	if err != nil {
+		log.Print(err)
 		return err
 	}
 
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return err
-	}
-
-	config := home + "/" + project.ID + ".yml"
-	if _, err = os.Stat(config); err == nil {
-		return err
-	}
-
-	err = utils.CreateFile(config, y)
-	if err != nil {
-		return err
-	}
-
+	config := utils.GetHomeDir() + "/" + p.ID + ".yml"
+	project, _ := utils.CreateProject(config, y)
 	fmt.Printf("%s\n", project.ID)
 	return nil
 }

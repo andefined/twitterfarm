@@ -8,19 +8,21 @@ import (
 )
 
 func main() {
+
 	app := cli.NewApp()
 	app.Name = "twitterfarm"
 	app.Version = "0.0.1"
 	app.Usage = "Collect data from Twitter"
 	app.Commands = []cli.Command{
 		{
-			Name:   "create",
-			Usage:  "Create a new project",
-			Action: commands.Create,
+			Name:      "create",
+			Usage:     "Create a new project",
+			Action:    commands.Create,
+			ArgsUsage: " ",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "name, n",
-					Usage: "Project name",
+					Usage: "Project Name",
 				},
 				cli.StringFlag{
 					Name:  "consumer-key, c",
@@ -40,11 +42,11 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-host, e",
-					Usage: "Comma Separated Hosts (ex. `http://elastic:changeme@host-a:9200,http://elastic:changeme@host-b:9200`)",
+					Usage: "Comma Separated Elasticsearch Hosts",
 				},
 				cli.StringFlag{
 					Name:  "elasticsearch-index, i",
-					Usage: "Elasticsearch Index (Default Lowercase: twitterfarm_${project_nane}_${project_id})",
+					Usage: "Elasticsearch Index",
 				},
 				cli.StringFlag{
 					Name:  "keywords, k",
@@ -54,9 +56,10 @@ func main() {
 		},
 
 		{
-			Name:   "list",
-			Usage:  "List all projects",
-			Action: commands.List,
+			Name:      "list",
+			Usage:     "List all projects",
+			Action:    commands.List,
+			ArgsUsage: " ",
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  "quiet, q",
@@ -67,7 +70,7 @@ func main() {
 
 		{
 			Name:   "test",
-			Usage:  "Test project configuration, connections etc..",
+			Usage:  "Test project configuration: Twitter API Authorization, Elasticsearch Connection, Elasticsearcg Index",
 			Action: commands.Test,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
@@ -78,7 +81,7 @@ func main() {
 		},
 
 		{
-			Name:   "remove",
+			Name:   "rm",
 			Usage:  "Remove a project",
 			Action: commands.Remove,
 			Flags: []cli.Flag{
@@ -101,5 +104,6 @@ func main() {
 			Action: commands.Exec,
 		},
 	}
+
 	app.Run(os.Args)
 }

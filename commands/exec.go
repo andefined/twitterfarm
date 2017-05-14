@@ -23,7 +23,7 @@ func Exec(c *cli.Context) {
 		cli.ShowSubcommandHelp(c)
 	}
 	config := c.Args().Get(0)
-	project := utils.ReadFile(config)
+	project := utils.ReadProject(config)
 
 	ctx := context.Background()
 	esclient, err := elastic.NewClient(elastic.SetURL(project.ElasticsearchHost))
@@ -32,14 +32,15 @@ func Exec(c *cli.Context) {
 		os.Exit(1)
 	}
 
+	if !utils.TwitterConnectionEstablished(project) {
+		log.Fatal("Unable to connect with Twitter API")
+		os.Exit(1)
+	}
+
 	consumer := oauth1.NewConfig(project.ConsumerKey, project.ConsumerSecret)
 	token := oauth1.NewToken(project.AccessToken, project.AccessTokenSecret)
 	httpClient := consumer.Client(oauth1.NoContext, token)
 
-	if !utils.TwitterConnectionEstablished(httpClient) {
-		log.Fatal("Unable to connect with Twitter Streaming API")
-		os.Exit(1)
-	}
 	// Twitter client
 	client := twitter.NewClient(httpClient)
 	demux := twitter.NewSwitchDemux()

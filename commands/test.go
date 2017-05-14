@@ -10,7 +10,6 @@ import (
 	elastic "gopkg.in/olivere/elastic.v5"
 
 	"github.com/andefined/twitterfarm/utils"
-	"github.com/dghubble/oauth1"
 	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
 )
@@ -22,17 +21,8 @@ func Test(c *cli.Context) error {
 		return nil
 	}
 
-	home, err := utils.GetHomeDir()
-	if err != nil {
-		return err
-	}
-
-	config := home + "/" + c.Args().Get(0) + ".yml"
-	project := utils.ReadFile(config)
-
-	consumer := oauth1.NewConfig(project.ConsumerKey, project.ConsumerSecret)
-	token := oauth1.NewToken(project.AccessToken, project.AccessTokenSecret)
-	httpClient := consumer.Client(oauth1.NoContext, token)
+	config := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
+	project := utils.ReadProject(config)
 
 	isESHost := true
 	isESIndex := false
@@ -73,7 +63,7 @@ func Test(c *cli.Context) error {
 	table.Append([]string{
 		project.ID,
 		project.Name,
-		strconv.FormatBool(utils.TwitterConnectionEstablished(httpClient)),
+		strconv.FormatBool(utils.TwitterConnectionEstablished(project)),
 		strconv.FormatBool(isESHost),
 		strconv.FormatBool(isESIndex),
 	})

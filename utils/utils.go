@@ -4,10 +4,11 @@ import (
 	"crypto/rand"
 	"fmt"
 	"io/ioutil"
-	"net/http"
+	"log"
 	"os"
 	"time"
 
+	"github.com/dghubble/oauth1"
 	homedir "github.com/mitchellh/go-homedir"
 
 	yaml "gopkg.in/yaml.v2"
@@ -38,36 +39,44 @@ func ID(n int) string {
 	return s
 }
 
-// CreateFile : Save configuration file
-func CreateFile(path string, content []byte) error {
+// CreateProject : Save configuration file
+func CreateProject(path string, content []byte) (*Project, error) {
+	if _, err := os.Stat(path); err == nil {
+		return nil, err
+	}
+
 	f, err := os.Create(path)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer f.Close()
 
 	_, err = f.Write(content)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	project := ReadProject(path)
+
+	return project, nil
 }
 
-// ReadFile ...
-func ReadFile(path string) *Project {
-	c := &Project{}
-	yamlFile, err := ioutil.ReadFile(path)
+// ReadProject ...
+func ReadProject(path string) *Project {
+	project := &Project{}
+	y, err := ioutil.ReadFile(path)
 	if err != nil {
-		return c
+		log.Fatal(err)
+		os.Exit(1)
 	}
-	err = yaml.Unmarshal(yamlFile, c)
+	err = yaml.Unmarshal(y, project)
 	if err != nil {
-		return c
+		log.Fatal(err)
+		os.Exit(1)
 	}
 
-	return c
+	return project
 }
 
 // SaveFile ...
@@ -80,21 +89,26 @@ func SaveFile(path string, content []byte) error {
 }
 
 // GetHomeDir : Return $HOME Directory or Error
-func GetHomeDir() (string, error) {
+func GetHomeDir() string {
 	home, err := homedir.Dir()
 	if err != nil {
-		return "", err
+		log.Fatal(err)
+		os.Exit(1)
 	}
 
 	path := home + "/.twitterfarm"
 	if _, err = os.Stat(path); os.IsNotExist(err) {
 		os.Mkdir(path, os.ModePerm)
 	}
-	return path, nil
+	return path
 }
 
 // TwitterConnectionEstablished ...
-func TwitterConnectionEstablished(httpClient *http.Client) bool {
+func TwitterConnectionEstablished(project *Project) bool {
+	consumer := oauth1.NewConfig(project.ConsumerKey, project.ConsumerSecret)
+	token := oauth1.NewToken(project.AccessToken, project.AccessTokenSecret)
+	httpClient := consumer.Client(oauth1.NoContext, token)
+
 	resp, err := httpClient.Get("https://api.twitter.com/1.1/search/tweets.json")
 	if err != nil {
 		return false
