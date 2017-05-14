@@ -90,9 +90,9 @@ func main() {
 		},
 
 		{
-			Name:   "run",
-			Usage:  "Run a project",
-			Action: commands.Run,
+			Name:   "start",
+			Usage:  "Start a project",
+			Action: commands.Start,
 		},
 
 		{

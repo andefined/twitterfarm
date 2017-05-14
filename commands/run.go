@@ -13,8 +13,8 @@ import (
 	"github.com/urfave/cli"
 )
 
-// Run ...
-func Run(c *cli.Context) error {
+// Start ...
+func Start(c *cli.Context) error {
 	if c.Args().Get(0) == "" {
 		cli.ShowSubcommandHelp(c)
 		return nil

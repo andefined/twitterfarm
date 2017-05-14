@@ -28,27 +28,23 @@ func Create(c *cli.Context) error {
 		DateCreated:        time.Now(),
 		PID:                0,
 	}
+
+	if project.ConsumerKey == "" ||
+		project.ConsumerSecret == "" ||
+		project.AccessToken == "" ||
+		project.AccessTokenSecret == "" ||
+		project.ElasticsearchHost == "" ||
+		project.Keywords == "" {
+		cli.ShowSubcommandHelp(c)
+		return nil
+	}
+
 	if project.Name == "" {
 		project.Name = project.ID
 	}
 
-	if project.ConsumerKey == "" || project.ConsumerSecret == "" || project.AccessToken == "" || project.AccessTokenSecret == "" {
-		cli.ShowSubcommandHelp(c)
-		return nil
-	}
-
-	if project.ElasticsearchHost == "" {
-		cli.ShowSubcommandHelp(c)
-		return nil
-	}
-
 	if project.ElasticsearchIndex == "" {
-		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + strings.Replace(project.Name, " ", "_", -1) + "_" + project.ID)
-	}
-
-	if project.Keywords == "" {
-		cli.ShowSubcommandHelp(c)
-		return nil
+		project.ElasticsearchIndex = strings.ToLower("twitterfarm" + "_" + project.ID)
 	}
 
 	y, err := yaml.Marshal(project)

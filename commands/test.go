@@ -21,6 +21,7 @@ func Test(c *cli.Context) error {
 		cli.ShowSubcommandHelp(c)
 		return nil
 	}
+
 	home, err := utils.GetHomeDir()
 	if err != nil {
 		return err
