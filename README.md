@@ -43,9 +43,9 @@ VERSION:
 COMMANDS:
      create   Create a new project
      list     List all projects
-     test     Test project configuration, connections etc..
-     remove   Remove a project
-     run      Run a project
+     test     Test project configuration: Twitter API Authorization, Elasticsearch Connection, Elasticsearcg Index
+     rm       Remove a project
+     start    Start a project
      exec     Execute a project
      help, h  Shows a list of commands or help for one command
 
