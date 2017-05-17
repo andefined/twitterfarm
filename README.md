@@ -4,32 +4,19 @@
 **Notice**: WIP
 
 # twitterfarm
-twitterfarm is a Twitter CLI tool written in Go. The goal is to collect and store data from Twitter Streaming API into an Elasticsearch index fast and easy. Before you begin you must have a working **elasticsearch** cluster and a **Twiiter Application** keys/secrets.
+twitterfarm is a Twitter CLI tool written in [Go](https://golang.org/). The goal is to collect and store data from Twitter Streaming API into an Elasticsearch index fast and easy. Before you begin you must have Elasticsearch up & running and Twiiter Application keys/secrets.
 
 - [Installing Elasticsearch](https://www.elastic.co/guide/en/elasticsearch/reference/5.x/install-elasticsearch.html)
-
-    The easiest way to test elasticsearch is with docker
-    ```bash
-    docker pull docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-    docker run \
-        -p 9200:9200 \
-        -e "http.host=0.0.0.0" \
-        -e "transport.host=127.0.0.1" \
-        docker.elastic.co/elasticsearch/elasticsearch:5.4.0
-    ```
-
 - [Twitter Applications](https://apps.twitter.com/)
 
-    Create an application and generate *Access Token*, *Access Secret* for every project you want to run in **twitterfarm**.
 
-
-#### Installation
+## Installation
 With Go
 ```bash
 go install github.com/andefined/twitterfarm
 ```
 
-#### How to use
+## How to use
 ```
 NAME:
    twitterfarm - Collect data from Twitter
@@ -41,9 +28,10 @@ VERSION:
    0.0.1
 
 COMMANDS:
+     init     Initialize twitterfarm. Will create a folder under $HOME/.twitterfarm
      create   Create a new project
      list     List all projects
-     test     Test project configuration: Twitter API Authorization, Elasticsearch Connection, Elasticsearcg Index
+     test     Test project configuration
      rm       Remove a project
      start    Start a project
      exec     Execute a project
@@ -53,16 +41,39 @@ GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 ```
-
-##### Create a project
+## Initialize twitterfarm
+Before you begin you need to initialize twitterfarm for the first time. The command simple creates a folder under `$HOME/.twitterfarm` where we store the configuration files for every project.
+```bash
+twitterfarm init
+```
+## Create a project
+You can create a project either by using the `--config` flag to load your custom [configuration](config/test.yml) file or by providing indivual flags.
+```bash
+twitterfarm create --config config/default.yml
+```
+or
 ```bash
 twitterfarm create \
-    --name "Trump" \
-    --keywords "Trump, giant douche" \
+    --name "us2016" \
+    --track "trump,the giant douche,hillary,turd sandwich" \
     --elasticsearch-host "http://elastic:changeme@localhost:9200" \
-    --elasticsearch-index "twitterfarm_trump" \
+    --elasticsearch-index "twitterfarm_trump_hillary" \
     --consumer-key $TWITTER_CONSUMER_KEY \
     --consumer-secret $TWITTER_CONSUMER_SECRET \
     --access-token $TWITTER_ACCESS_TOKEN \
     --access-token-secret $TWITTER_ACCESS_TOKEN_SECRET
 ```
+
+## Contributing
+1. Fork it
+2. Create your feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'feature-name'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
+
+## Credits
+- [urfave/cli](github.com/urfave/cli)
+- [olivere/elastic.v5](gopkg.in/olivere/elastic.v5)
+- [dghubble/go-twitter](github.com/dghubble/go-twitter)
+- [dghubble/oauth1](github.com/dghubble/oauth1)
+- [mitchellh/go-homedir](github.com/mitchellh/go-homedir)

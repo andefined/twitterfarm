@@ -2,31 +2,58 @@ package commands
 
 import (
 	"fmt"
-	"log"
 	"strings"
 	"time"
 
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/andefined/twitterfarm/utils"
 	"github.com/urfave/cli"
-
-	utils "github.com/andefined/twitterfarm/utils"
+	yaml "gopkg.in/yaml.v2"
 )
 
-// Create ...
-func Create(c *cli.Context) error {
-	p := utils.Project{
+func createWithFile(c *cli.Context) *utils.Project {
+	p := utils.ReadProject(c.String("config"))
+	p.ID = utils.ID(5)
+	p.Follow = ""
+	p.StreamingType = "filter"
+	p.StallWarnings = false
+	p.DateCreated = time.Now()
+	p.PID = 0
+
+	return p
+}
+
+func createWithFlags(c *cli.Context) *utils.Project {
+	p := &utils.Project{
 		ID:                 utils.ID(5),
 		Name:               c.String("name"),
+		Track:              c.String("track"),
+		FilterLevel:        c.String("filter-level"),
+		Language:           c.String("language"),
+		Location:           c.String("location"),
+		Follow:             "",
+		StreamingType:      "filter",
+		StallWarnings:      false,
 		ConsumerKey:        c.String("consumer-key"),
 		ConsumerSecret:     c.String("consumer-secret"),
 		AccessToken:        c.String("access-token"),
 		AccessTokenSecret:  c.String("access-token-secret"),
 		ElasticsearchHost:  c.String("elasticsearch-host"),
 		ElasticsearchIndex: c.String("elasticsearch-index"),
-		Keywords:           c.String("keywords"),
 		DateCreated:        time.Now(),
 		PID:                0,
+	}
+
+	return p
+}
+
+// Create : Create a new project
+func Create(c *cli.Context) error {
+	var p *utils.Project
+
+	if c.String("config") != "" {
+		p = createWithFile(c)
+	} else {
+		p = createWithFlags(c)
 	}
 
 	if p.ConsumerKey == "" ||
@@ -34,7 +61,7 @@ func Create(c *cli.Context) error {
 		p.AccessToken == "" ||
 		p.AccessTokenSecret == "" ||
 		p.ElasticsearchHost == "" ||
-		p.Keywords == "" {
+		p.Track == "" {
 		cli.ShowSubcommandHelp(c)
 		return nil
 	}
@@ -48,13 +75,11 @@ func Create(c *cli.Context) error {
 	}
 
 	y, err := yaml.Marshal(p)
-	if err != nil {
-		log.Print(err)
-		return err
-	}
+	utils.ExitOnError(err)
 
 	config := utils.GetHomeDir() + "/" + p.ID + ".yml"
-	project, _ := utils.CreateProject(config, y)
+	project := utils.CreateProject(config, y)
 	fmt.Printf("%s\n", project.ID)
+
 	return nil
 }

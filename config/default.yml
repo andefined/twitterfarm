@@ -1,0 +1,27 @@
+# Project Name
+name: us2016
+
+# Streaming Specific (https://dev.twitter.com/streaming/overview/request-parameters)
+track: trump,the giant douche,hillary,turd sandwich
+filter-level: none
+language: en
+location: -126.56,22.88,-65.04,49.98
+follow: ""
+streaming-type: filter
+stall-warnings: false
+
+# Twitter Application Specific (https://apps.twitter.com/)
+# Consumer Key
+consumer-key: $TWITTER_CONSUMER_KEY
+# Consumer Secret
+consumer-secret: $TWITTER_CONSUMER_SECRET
+# Access Token
+access-token: $TWITTER_ACCESS_TOKEN
+ # Access Token Secret
+access-token-secret: $TWITTER_ACCESS_TOKEN_SECRET
+
+# Elasticsearch Specific (https://www.elastic.co/)
+# Elasticsearch Host (ex. http://elastic:changeme@host-a:9200, http://elastic:changeme@host-b:9200)
+elasticsearch-host: http://elastic:changeme@localhost:9200
+# Elasticsearch Index
+elasticsearch-index: twitterfarm_trump_hillary

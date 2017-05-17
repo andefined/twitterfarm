@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/andefined/twitterfarm/utils"
-	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
 )
 
@@ -49,22 +49,12 @@ func renderIDs(paths chan string) {
 }
 
 func renderTable(paths chan string) {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"ID", "PID", "NAME", "STATUS", "KEYWORDS"})
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-	table.SetAutoWrapText(false)
+	fmt.Print("\n")
 	for path := range paths {
 		project := utils.ReadProject(path)
-		status := "stopped"
-		if project.PID > 0 {
-			status = "running"
-		}
 		proc, _ := os.FindProcess(project.PID)
 		testproc := proc.Signal(syscall.Signal(0))
-		table.Append([]string{project.ID, testproc.Error() + " (" + strconv.Itoa(project.PID) + ")", project.Name, status, project.Keywords})
+		fmt.Printf("ID: %s | PID: %s | Status: %s | Name: %.10s | Track: %.20s\n", project.ID, strconv.Itoa(project.PID), strings.Split(testproc.Error(), "os: process ")[1], project.Name, project.Track)
+		fmt.Print("----------------\n")
 	}
-
-	table.Render()
-
 }

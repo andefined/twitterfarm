@@ -55,7 +55,7 @@ func Exec(c *cli.Context) {
 		}
 	}
 	filterParams := &twitter.StreamFilterParams{
-		Track:         strings.Split(project.Keywords, ","),
+		Track:         strings.Split(project.Track, ","),
 		StallWarnings: twitter.Bool(true),
 	}
 

@@ -8,12 +8,17 @@ import (
 )
 
 func main() {
-
 	app := cli.NewApp()
 	app.Name = "twitterfarm"
 	app.Version = "0.0.1"
 	app.Usage = "Collect data from Twitter"
 	app.Commands = []cli.Command{
+		{
+			Name:      "init",
+			Usage:     "Initialize twitterfarm. Will create a folder under $HOME/.twitterfarm",
+			Action:    commands.Init,
+			ArgsUsage: " ",
+		},
 		{
 			Name:      "create",
 			Usage:     "Create a new project",
@@ -21,36 +26,57 @@ func main() {
 			ArgsUsage: " ",
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "name, n",
-					Usage: "Project Name",
+					Name:  "config",
+					Usage: "Path to your .yml configuration file",
 				},
 				cli.StringFlag{
-					Name:  "consumer-key, c",
+					Name:  "name",
+					Usage: "Project Name",
+				},
+
+				cli.StringFlag{
+					Name:  "track",
+					Usage: "Tracking Keywords",
+				},
+				cli.StringFlag{
+					Name:  "filter-level",
+					Usage: "Filter Level",
+					Value: "none",
+				},
+				cli.StringFlag{
+					Name:  "language",
+					Usage: "Language",
+					Value: "en",
+				},
+				cli.StringFlag{
+					Name:  "location",
+					Usage: "Location",
+				},
+
+				cli.StringFlag{
+					Name:  "consumer-key",
 					Usage: "Twitter Consumer Key",
 				},
 				cli.StringFlag{
-					Name:  "consumer-secret, s",
+					Name:  "consumer-secret",
 					Usage: "Twitter Consumer Secret",
 				},
 				cli.StringFlag{
-					Name:  "access-token, t",
+					Name:  "access-token",
 					Usage: "Twitter Access Token",
 				},
 				cli.StringFlag{
-					Name:  "access-token-secret, a",
+					Name:  "access-token-secret",
 					Usage: "Twitter Access Secret",
 				},
+
 				cli.StringFlag{
-					Name:  "elasticsearch-host, e",
+					Name:  "elasticsearch-host",
 					Usage: "Comma Separated Elasticsearch Hosts",
 				},
 				cli.StringFlag{
-					Name:  "elasticsearch-index, i",
+					Name:  "elasticsearch-index",
 					Usage: "Elasticsearch Index",
-				},
-				cli.StringFlag{
-					Name:  "keywords, k",
-					Usage: "Keyword to stream",
 				},
 			},
 		},
@@ -70,7 +96,7 @@ func main() {
 
 		{
 			Name:   "test",
-			Usage:  "Test project configuration: Twitter API Authorization, Elasticsearch Connection, Elasticsearcg Index",
+			Usage:  "Test project configuration",
 			Action: commands.Test,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
