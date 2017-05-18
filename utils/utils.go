@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -54,14 +53,6 @@ func SetHomeDir() {
 func GetHomeDir() string {
 	home, _ := homedir.Dir()
 	return home + "/.twitterfarm"
-}
-
-// SaveFile ...
-func SaveFile(path string, content []byte) error {
-	err := ioutil.WriteFile(path, content, 0644)
-	ExitOnError(err)
-
-	return nil
 }
 
 // TruncateString ...

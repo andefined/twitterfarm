@@ -1,12 +1,9 @@
 package commands
 
-/*
 import (
-	"fmt"
 	"os"
-	"path/filepath"
-	"syscall"
 
+	"github.com/andefined/twitterfarm/projects"
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/urfave/cli"
 )
@@ -18,77 +15,33 @@ func Remove(c *cli.Context) error {
 		return nil
 	}
 
+	// Remove by Project ID
 	if c.Args().Get(0) != "" {
-		_, err := removeByID(c.Args().Get(0))
-		if err != nil {
-			return err
+		path := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
+		// Stop Project (if running)
+		c.App.Run([]string{c.App.Name, "stop", c.Args().Get(0)})
+		// Delete project configuration file
+		err := os.Remove(path)
+		utils.ExitOnError(err)
+	}
+
+	// Remove All
+	if c.Bool("all") {
+		paths := make(chan string, 5)
+		utils.GetAllConfigs(paths)
+
+		for path := range paths {
+			// Create a temp project
+			project := &projects.Project{}
+			// Assign values from file
+			project.Read(path)
+			// Stop Project (if running)
+			c.App.Run([]string{c.App.Name, "stop", project.ID})
+			// Delete project configuration file
+			err := os.Remove(path)
+			utils.ExitOnError(err)
 		}
 	}
 
-	if c.Bool("all") {
-		removeAll()
-	}
-
 	return nil
 }
-
-func removeByID(id string) (string, error) {
-	config := utils.GetHomeDir() + "/" + id + ".yml"
-	project := utils.ReadProject(config)
-	kill(project.PID)
-	delete(config)
-	return id, nil
-}
-
-func removeAll() (string, error) {
-	home := utils.GetHomeDir()
-	paths := make(chan string, 100)
-	go (func() error {
-		defer close(paths)
-		return filepath.Walk(home, func(p string, f os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if f.IsDir() {
-				return nil
-			}
-			select {
-			case paths <- p:
-			}
-			return nil
-		})
-	})()
-
-	for path := range paths {
-		project := utils.ReadProject(path)
-		removeByID(project.ID)
-	}
-
-	return "", nil
-}
-
-func delete(path string) error {
-	err := os.Remove(path)
-	if err != nil {
-		fmt.Printf("Can't find project: %s exiting\n", path)
-		return err
-	}
-	return nil
-}
-
-func kill(pid int) error {
-	if pid <= 1 {
-		return nil
-	}
-	proc, err := os.FindProcess(pid)
-	if err != nil {
-		fmt.Printf("Failed to find process: %d\n", pid)
-	} else {
-		err := proc.Signal(syscall.Signal(0))
-		fmt.Printf("process.Signal on pid %d returned: %v\n", pid, err)
-	}
-
-	proc.Kill()
-	return nil
-}
-*/

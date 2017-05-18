@@ -86,21 +86,26 @@ func (p *Project) Init(config string) {
 		utils.ExitOnError(errors.New("File allready exists"))
 	}
 
-	projectConfigFile, err := os.Create(projectConfigPath)
+	f, err := os.Create(projectConfigPath)
 	utils.ExitOnError(err)
 
-	defer projectConfigFile.Close()
+	defer f.Close()
 
-	projectConfig, err := yaml.Marshal(p)
+	data, err := yaml.Marshal(p)
 	utils.ExitOnError(err)
 
-	_, err = projectConfigFile.Write(projectConfig)
+	// _, err = f.Write(data)
+	err = ioutil.WriteFile(projectConfigPath, data, 0644)
 	utils.ExitOnError(err)
 }
 
 // Save ...
-func (p *Project) Save() {
+func (p *Project) Save(path string) {
+	data, err := yaml.Marshal(&p)
+	utils.ExitOnError(err)
 
+	err = ioutil.WriteFile(path, data, 0644)
+	utils.ExitOnError(err)
 }
 
 // Read ...

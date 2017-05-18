@@ -1,15 +1,9 @@
 package commands
 
-/*
 import (
-	"bytes"
-	"fmt"
-	"log"
 	"os/exec"
-	"strings"
 
-	yaml "gopkg.in/yaml.v2"
-
+	"github.com/andefined/twitterfarm/projects"
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/urfave/cli"
 )
@@ -21,29 +15,33 @@ func Start(c *cli.Context) error {
 		return nil
 	}
 
-	config := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
-	project := utils.ReadProject(config)
-	fmt.Printf("%s\n", project.ID)
+	path := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
+	// Create a temp project
+	project := &projects.Project{}
+	// Assign values from file
+	project.Read(path)
 
-	cmd := exec.Command("twitterfarm", "exec", config)
-	cmd.Stdin = strings.NewReader("")
-	var out bytes.Buffer
-	cmd.Stdout = &out
+	/**
+	  Unfortunatelly urfave/cli doesn't support "directly" background processes,
+	  so `start` command only executes the `exec` command in the background via os/exec.
+	  The idea is to keep a history of the `pid` of the process
+	  in order to restart, stop, and start without overlapping processes.
+	  The problem is that i am not sure if this workaround going to work in NON-Unix systems.
+	*/
+
+	// cmd := exec.Command("go run /home/andefined/go/src/github.com/andefined/twitterfarm/main.go", "exec", path)
+	cmd := exec.Command(c.App.Name, "exec", path)
+
+	// var out bytes.Buffer
+	// cmd.Stdout = os.Stdout
+
 	err := cmd.Start()
 	if err != nil {
-		log.Fatal(err)
-		return err
+		utils.ExitOnError(err)
 	}
+
 	project.PID = cmd.Process.Pid
-
-	y, err := yaml.Marshal(project)
-	if err != nil {
-		log.Fatal(err)
-		return err
-	}
-
-	utils.SaveFile(config, y)
+	project.Save(path)
 
 	return nil
 }
-*/

@@ -115,19 +115,35 @@ func main() {
 					Usage: "Remove all projects",
 				},
 			},
-		},
-
-		{
-			Name:   "start",
-			Usage:  "Start a project",
-			Action: commands.Start,
-		},
-
-		{
-			Name:   "exec",
-			Usage:  "Execute a project",
-			Action: commands.Exec,
 		},*/
+
+		{
+			Name:      "start",
+			Usage:     "Start a project",
+			Action:    commands.Start,
+			ArgsUsage: `[project id]`,
+		},
+
+		{
+			Name:      "stop",
+			Usage:     "Stop a project",
+			Action:    commands.Stop,
+			ArgsUsage: `[project id]`,
+		},
+
+		{
+			Name:      "restart",
+			Usage:     "Restart a project",
+			Action:    commands.Restart,
+			ArgsUsage: `[project id]`,
+		},
+
+		{
+			Name:      "exec",
+			Usage:     "Execute a project",
+			Action:    commands.Exec,
+			ArgsUsage: `[project configuration file]`,
+		},
 	}
 
 	app.Run(os.Args)

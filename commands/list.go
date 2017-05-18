@@ -51,12 +51,16 @@ func renderTable(paths chan string) {
 		// Find project process
 		proc, _ := os.FindProcess(project.PID)
 		// Send Signal(0) to process, to test if running
-		testproc := proc.Signal(syscall.Signal(0))
+		status := "running"
+		err := proc.Signal(syscall.Signal(0))
+		if err != nil {
+			status = strings.Split(err.Error(), "os: process ")[1]
+		}
 		// Output
 		fmt.Printf("%-10s | %-5s | %-16s | %-16s | %s\n",
 			project.ID,
 			strconv.Itoa(project.PID),
-			strings.Split(testproc.Error(), "os: process ")[1],
+			status, // testproc.Error(), //strings.Split(testproc.Error(), "os: process ")[0],
 			utils.TruncateString(16, project.Name),
 			utils.TruncateString(24, project.Track),
 		)
