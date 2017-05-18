@@ -47,7 +47,7 @@ Before you begin you need to initialize twitterfarm for the first time. The comm
 twitterfarm init
 ```
 ## Create a project
-You can create a project either by using the `--config` flag to load your custom [configuration](config/test.yml) file or by providing indivual flags. If succesfully created it will return the project **ID**.
+You can create a project either by using the `--config` flag to load your custom [configuration](config/default.yml) file or by providing indivual flags. If succesfully created it will return the project **ID**.
 ```bash
 twitterfarm create --config config/default.yml
 ```
