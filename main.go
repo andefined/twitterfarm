@@ -105,7 +105,7 @@ func main() {
 			},
 		},
 
-		/*{
+		{
 			Name:   "rm",
 			Usage:  "Remove a project",
 			Action: commands.Remove,
@@ -115,7 +115,7 @@ func main() {
 					Usage: "Remove all projects",
 				},
 			},
-		},*/
+		},
 
 		{
 			Name:      "start",
