@@ -1,5 +1,6 @@
 package commands
 
+/*
 import (
 	"bytes"
 	"fmt"
@@ -45,3 +46,4 @@ func Start(c *cli.Context) error {
 
 	return nil
 }
+*/

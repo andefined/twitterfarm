@@ -1,5 +1,6 @@
 package commands
 
+/*
 import (
 	"context"
 	"fmt"
@@ -75,3 +76,4 @@ func Exec(c *cli.Context) {
 	fmt.Println("Stopping Stream...")
 	stream.Stop()
 }
+*/

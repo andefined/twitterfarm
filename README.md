@@ -47,11 +47,11 @@ Before you begin you need to initialize twitterfarm for the first time. The comm
 twitterfarm init
 ```
 ## Create a project
-You can create a project either by using the `--config` flag to load your custom [configuration](config/test.yml) file or by providing indivual flags.
+You can create a project either by using the `--config` flag to load your custom [configuration](config/test.yml) file or by providing indivual flags. If succesfully created it will return the project **ID**.
 ```bash
 twitterfarm create --config config/default.yml
 ```
-or
+OR
 ```bash
 twitterfarm create \
     --name "us2016" \
@@ -62,6 +62,25 @@ twitterfarm create \
     --consumer-secret $TWITTER_CONSUMER_SECRET \
     --access-token $TWITTER_ACCESS_TOKEN \
     --access-token-secret $TWITTER_ACCESS_TOKEN_SECRET
+```
+
+## List your projects
+Will return **ID**, **PID**, **STATUS**, **NAME** and **TRACK**.
+```bash
+twitterfarm list
+
+ID         | PID   | STATUS           | NAME             | TRACK
+           -       -                  -                  -
+215BC106C5 | 0     | not initialized  | us2016           | trump,the giant douch...
+247FBA4667 | 0     | not initialized  | us2016           | trump,the giant douch...
+```
+OR if you want to return only the **ID**.
+```bash
+twitterfarm list -q
+
+215BC106C5
+247FBA4667
+
 ```
 
 ## Contributing

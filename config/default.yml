@@ -12,13 +12,13 @@ stall-warnings: false
 
 # Twitter Application Specific (https://apps.twitter.com/)
 # Consumer Key
-consumer-key: $TWITTER_CONSUMER_KEY
+consumer-key: TWITTER_CONSUMER_KEY
 # Consumer Secret
-consumer-secret: $TWITTER_CONSUMER_SECRET
+consumer-secret: TWITTER_CONSUMER_SECRET
 # Access Token
-access-token: $TWITTER_ACCESS_TOKEN
+access-token: TWITTER_ACCESS_TOKEN
  # Access Token Secret
-access-token-secret: $TWITTER_ACCESS_TOKEN_SECRET
+access-token-secret: TWITTER_ACCESS_TOKEN_SECRET
 
 # Elasticsearch Specific (https://www.elastic.co/)
 # Elasticsearch Host (ex. http://elastic:changeme@host-a:9200, http://elastic:changeme@host-b:9200)

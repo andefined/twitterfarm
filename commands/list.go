@@ -3,38 +3,26 @@ package commands
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"syscall"
 
+	"github.com/andefined/twitterfarm/projects"
 	"github.com/andefined/twitterfarm/utils"
 	"github.com/urfave/cli"
 )
 
-// List ...
+// List : List all projects
 func List(c *cli.Context) error {
-	home := utils.GetHomeDir()
-	paths := make(chan string, 100)
-	go (func() error {
-		defer close(paths)
-		return filepath.Walk(home, func(p string, f os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if f.IsDir() {
-				return nil
-			}
-			select {
-			case paths <- p:
-			}
-			return nil
-		})
-	})()
+	// Read concurrent
+	paths := make(chan string, 5)
+	utils.GetAllConfigs(paths)
 
 	if c.Bool("quiet") {
+		// Output only IDs
 		renderIDs(paths)
 	} else {
+		// Output Normal
 		renderTable(paths)
 	}
 
@@ -43,18 +31,34 @@ func List(c *cli.Context) error {
 
 func renderIDs(paths chan string) {
 	for path := range paths {
-		project := utils.ReadProject(path)
+		// Create a temp project
+		project := &projects.Project{}
+		// Assign values from file
+		project.Read(path)
+		// Output
 		fmt.Printf("%s\n", project.ID)
 	}
 }
 
 func renderTable(paths chan string) {
-	fmt.Print("\n")
+	fmt.Printf("%-10s | %-5s | %-16s | %-16s | %s \n", "ID", "PID", "STATUS", "NAME", "TRACK")
+	fmt.Printf("%12s %7s %18s %18s\n", "-", "-", "-", "-")
 	for path := range paths {
-		project := utils.ReadProject(path)
+		// Create a temp project
+		project := &projects.Project{}
+		// Assign values from file
+		project.Read(path)
+		// Find project process
 		proc, _ := os.FindProcess(project.PID)
+		// Send Signal(0) to process, to test if running
 		testproc := proc.Signal(syscall.Signal(0))
-		fmt.Printf("ID: %s | PID: %s | Status: %s | Name: %.10s | Track: %.20s\n", project.ID, strconv.Itoa(project.PID), strings.Split(testproc.Error(), "os: process ")[1], project.Name, project.Track)
-		fmt.Print("----------------\n")
+		// Output
+		fmt.Printf("%-10s | %-5s | %-16s | %-16s | %s\n",
+			project.ID,
+			strconv.Itoa(project.PID),
+			strings.Split(testproc.Error(), "os: process ")[1],
+			utils.TruncateString(16, project.Name),
+			utils.TruncateString(24, project.Track),
+		)
 	}
 }

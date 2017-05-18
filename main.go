@@ -80,7 +80,6 @@ func main() {
 				},
 			},
 		},
-
 		{
 			Name:      "list",
 			Usage:     "List all projects",
@@ -93,20 +92,20 @@ func main() {
 				},
 			},
 		},
-
 		{
-			Name:   "test",
-			Usage:  "Test project configuration",
-			Action: commands.Test,
+			Name:      "test",
+			Usage:     "Test project configuration",
+			Action:    commands.Test,
+			ArgsUsage: `[project id]`,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
-					Name:  "fix, f",
-					Usage: "Try to fix errors (ex. create the index)",
+					Name:  "create-index, c",
+					Usage: "Create the Elasticsearch Index",
 				},
 			},
 		},
 
-		{
+		/*{
 			Name:   "rm",
 			Usage:  "Remove a project",
 			Action: commands.Remove,
@@ -128,7 +127,7 @@ func main() {
 			Name:   "exec",
 			Usage:  "Execute a project",
 			Action: commands.Exec,
-		},
+		},*/
 	}
 
 	app.Run(os.Args)

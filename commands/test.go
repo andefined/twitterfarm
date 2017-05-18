@@ -1,74 +1,42 @@
 package commands
 
 import (
-	"context"
-	"log"
-	"os"
-	"strconv"
-	"strings"
+	"fmt"
 
-	elastic "gopkg.in/olivere/elastic.v5"
-
+	"github.com/andefined/twitterfarm/projects"
 	"github.com/andefined/twitterfarm/utils"
-	"github.com/olekukonko/tablewriter"
 	"github.com/urfave/cli"
 )
 
-// Test ...
+// Test : Test a specific project
 func Test(c *cli.Context) error {
 	if c.Args().Get(0) == "" {
 		cli.ShowSubcommandHelp(c)
 		return nil
 	}
 
-	config := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
-	project := utils.ReadProject(config)
-
-	isESHost := true
-	isESIndex := false
-
-	ctx := context.Background()
-	client, err := elastic.NewClient(elastic.SetURL(project.ElasticsearchHost))
-	if err != nil {
-		isESHost = false
+	path := utils.GetHomeDir() + "/" + c.Args().Get(0) + ".yml"
+	// Create a temp project
+	project := &projects.Project{}
+	// Assign values from file
+	project.Read(path)
+	// Force create elasticsearch index
+	createIndex := false
+	if c.Bool("create-index") {
+		createIndex = true
 	}
+	// Test if there is a living connection for elasticsearch && if index created
+	isESHost, isESIndex := project.TestElasticsearch(createIndex)
 
-	if isESHost {
-		isESIndex = true
-		exists, err := client.IndexExists(strings.ToLower(project.ElasticsearchIndex)).Do(context.Background())
-		if err != nil {
-			isESIndex = false
-			log.Fatal(err)
-			return err
-		}
-		if !exists {
-			isESIndex = false
-		}
-	}
-
-	if c.Bool("fix") {
-		if isESHost && !isESIndex {
-			isESIndex = true
-			_, err := client.CreateIndex(project.ElasticsearchIndex).Do(ctx)
-			if err != nil {
-				isESIndex = false
-				log.Fatal(err)
-				return err
-			}
-		}
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"ID", "NAME", "TWITTER CONNECTION", "ES CONNECTION", "ES INDEX"})
-	table.Append([]string{
+	// Output
+	fmt.Printf("%-12s | %-12v | %-12v | %v\n", "ID", "TWITTER API", "ELASTIC HOST", "ELASTIC INDEX")
+	fmt.Printf("%14s %14s %14s\n", "-", "-", "-")
+	fmt.Printf("%-12s | %-12v | %-12v | %v\n",
 		project.ID,
-		project.Name,
-		strconv.FormatBool(utils.TwitterConnectionEstablished(project)),
-		strconv.FormatBool(isESHost),
-		strconv.FormatBool(isESIndex),
-	})
-
-	table.Render()
+		project.TestTwitter(),
+		isESHost,
+		isESIndex,
+	)
 
 	return nil
 }

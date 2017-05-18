@@ -1,5 +1,6 @@
 package commands
 
+/*
 import (
 	"fmt"
 	"os"
@@ -90,3 +91,4 @@ func kill(pid int) error {
 	proc.Kill()
 	return nil
 }
+*/
