@@ -22,7 +22,7 @@ deploy:
     provider: releases
     skip_cleanup: true
     api_key:
-        secure: $(git config --get github.token)
+        secure: $GITHUB_TOKEN
     file:
         - "release/twitterfarm-v$VERSION-linux-amd64"
         - "release/twitterfarm-v$VERSION-darwin-amd64"
