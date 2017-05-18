@@ -1,13 +1,15 @@
 package commands
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	elastic "gopkg.in/olivere/elastic.v5"
 
 	"github.com/andefined/twitterfarm/projects"
 	"github.com/andefined/twitterfarm/utils"
@@ -28,43 +30,41 @@ func Exec(c *cli.Context) {
 	// Assign values from file
 	project.Read(path)
 
-	/*ctx := context.Background()
-	esclient, err := elastic.NewClient(elastic.SetURL(project.ElasticsearchHost))
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(1)
-	}
+	ctx := context.Background()
+	// Elasticsearch client
+	esClient, err := elastic.NewClient(elastic.SetURL(project.ElasticsearchHost))
+	utils.ExitOnError(err)
 
-	if !utils.TwitterConnectionEstablished(project) {
-		log.Fatal("Unable to connect with Twitter API")
-		os.Exit(1)
-	}*/
-
+	// Http client & authentication
 	consumer := oauth1.NewConfig(project.ConsumerKey, project.ConsumerSecret)
 	token := oauth1.NewToken(project.AccessToken, project.AccessTokenSecret)
 	httpClient := consumer.Client(oauth1.NoContext, token)
 
 	// Twitter client
-	client := twitter.NewClient(httpClient)
+	twitterClient := twitter.NewClient(httpClient)
+
+	// Demux Listener
 	demux := twitter.NewSwitchDemux()
+	// On Tweet
 	demux.Tweet = func(tweet *twitter.Tweet) {
-		out, _ := json.Marshal(tweet)
-		fmt.Println(string(out))
-		/*t := tweet
-		_, err = esclient.Index().Index(strings.ToLower(project.ElasticsearchIndex)).Type("tweet").BodyJson(t).Refresh("true").Do(ctx)
-		if err != nil {
-			log.Fatal(err)
-			panic(err)
-		}*/
+		// out, _ := json.Marshal(tweet)
+		// fmt.Println(string(out))
+		_, err = esClient.Index().Index(project.ElasticsearchIndex).Type("tweet").BodyJson(tweet).Refresh("true").Do(ctx)
+		utils.ExitOnError(err)
 	}
+
+	// Stream filter
 	filterParams := &twitter.StreamFilterParams{
 		Track:         strings.Split(project.Track, ","),
 		StallWarnings: &project.StallWarnings,
+		Locations:     strings.Split(project.Location, ","),
 	}
 
-	stream, err := client.Streams.Filter(filterParams)
+	// Streamer
+	stream, err := twitterClient.Streams.Filter(filterParams)
 	utils.ExitOnError(err)
 
+	// Tweets channel
 	go demux.HandleChan(stream.Messages)
 
 	// Wait for SIGINT and SIGTERM (HIT CTRL-C)
@@ -73,6 +73,9 @@ func Exec(c *cli.Context) {
 	log.Println(<-ch)
 
 	fmt.Println("Stopping Stream...")
+
+	// Stop the stream
 	stream.Stop()
-	// esclient.Stop()
+	// Stop elasticsearch client
+	esClient.Stop()
 }
