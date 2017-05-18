@@ -6,6 +6,7 @@ import (
 )
 
 // Init ...
-func Init(c *cli.Context) {
+func Init(c *cli.Context) error {
 	utils.SetHomeDir()
+	return nil
 }
