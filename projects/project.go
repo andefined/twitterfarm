@@ -144,6 +144,7 @@ func (p *Project) TestElasticsearch(create bool) (bool, bool) {
 				isIndex = false
 				utils.ExitOnError(err)
 			}
+			isIndex = false
 		}
 	}
 
