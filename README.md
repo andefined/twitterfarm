@@ -173,8 +173,8 @@ twitterfarm rm $PROJECT_ID
 5. Submit a pull request
 
 ## Credits
-- ![urfave/cli](https://github.com/urfave/cli)
-- ![olivere/elastic.v5](https://github.com/olivere/elastic/tree/v5.0.38)
-- ![dghubble/go-twitter](https://github.com/dghubble/go-twitter)
-- ![dghubble/oauth1](https://github.com/dghubble/oauth1)
-- ![mitchellh/go-homedir](https://github.com/mitchellh/go-homedir)
+- [urfave/cli](https://github.com/urfave/cli)
+- [olivere/elastic.v5](https://github.com/olivere/elastic/tree/v5.0.38)
+- [dghubble/go-twitter](https://github.com/dghubble/go-twitter)
+- [dghubble/oauth1](https://github.com/dghubble/oauth1)
+- [mitchellh/go-homedir](https://github.com/mitchellh/go-homedir)
