@@ -1,8 +1,6 @@
 [![Build Status](https://travis-ci.org/andefined/twitterfarm.svg?branch=master)](https://travis-ci.org/andefined/twitterfarm)
 [![Go Report Card](https://goreportcard.com/badge/github.com/andefined/twitterfarm)](https://goreportcard.com/report/github.com/andefined/twitterfarm)
 
-**Notice**: WIP
-
 # twitterfarm
 twitterfarm is a Twitter CLI tool written in [Go](https://golang.org/). The goal is to collect and store data from Twitter Streaming API into an Elasticsearch index fast and easy. Before you begin you must have Elasticsearch up & running and Twitter Application keys/secrets.
 
@@ -11,7 +9,7 @@ twitterfarm is a Twitter CLI tool written in [Go](https://golang.org/). The goal
 
 
 ## Installation
-With Go
+You can download the binaries from the [releases](/releases) section, or you can install it with Go.
 
 ```bash
 go install github.com/andefined/twitterfarm
@@ -46,7 +44,7 @@ GLOBAL OPTIONS:
 ```
 
 ## Initialize twitterfarm
-Before you begin you need to initialize twitterfarm for the first time. The command simple creates a folder under `$HOME/.twitterfarm` where we store the configuration files for every project.
+To start using twitterfarm you need to create a working directory. The command simple creates a folder under `$HOME/.twitterfarm` where we store the configuration files for every project and needs to be run only once.
 
 ```bash
 twitterfarm init
@@ -54,28 +52,6 @@ twitterfarm init
 
 ## Create a project
 You can create a project either by using the `--config` flag to load your custom [configuration](config/default.yml) or by providing individual flags. If successfully created it will return the project **ID**.
-
-```bash
-NAME:
-   twitterfarm create - Create a new project
-
-USAGE:
-   twitterfarm create [command options]  
-
-OPTIONS:
-   --config value               Path to your .yml configuration file
-   --name value                 Project Name
-   --track value                Tracking Keywords
-   --filter-level value         Filter Level (default: "none")
-   --language value             Language (default: "en")
-   --location value             Location
-   --consumer-key value         Twitter Consumer Key
-   --consumer-secret value      Twitter Consumer Secret
-   --access-token value         Twitter Access Token
-   --access-token-secret value  Twitter Access Secret
-   --elasticsearch-host value   Comma Separated Elasticsearch Hosts
-   --elasticsearch-index value  Elasticsearch Index
-```
 
 ```bash
 twitterfarm create --config config/default.yml
@@ -131,17 +107,6 @@ elasticsearch-index: twitterfarm_trump_hillary
 Will return **ID**, **PID**, **STATUS**, **NAME** and **TRACK**.
 
 ```bash
-NAME:
-   twitterfarm list - List all projects
-
-USAGE:
-   twitterfarm list [command options]  
-
-OPTIONS:
-   --quiet, -q  Print only ID
-```
-
-```bash
 twitterfarm list
 
 ID         | PID   | STATUS           | NAME             | TRACK
@@ -160,10 +125,10 @@ twitterfarm list -q
 ```
 
 ## Test a project
-Test command is very useful for testing the connection with Twitter Streaming API and you Elasticsearch. By providing the `--create-index` flag it will create the corresponding Elasticsearch Index (fi not exists).
+Test command is very useful for testing the connection with Twitter Streaming API and your Elasticsearch. By providing the `--create-index` flag it will create the corresponding Elasticsearch Index (fi not exists).
 
 ```bash
-twitterfarm test $PROJECTID
+twitterfarm test $PROJECT_ID
 
 ID           | TWITTER API  | ELASTIC HOST | ELASTIC INDEX
              -              -              -
@@ -172,31 +137,33 @@ ID           | TWITTER API  | ELASTIC HOST | ELASTIC INDEX
 
 ## Start a project
 ```bash
-twitterfarm start $PROJECTID
+twitterfarm start $PROJECT_ID
 ```
 
 ## Restart a project
 ```bash
-twitterfarm restart $PROJECTID
+twitterfarm restart $PROJECT_ID
 ```
 
 ## Stop a project
 ```bash
-twitterfarm stop $PROJECTID
+twitterfarm stop $PROJECT_ID
 ```
 
 ## Remove a project
-```bash
-twitterfarm rm $PROJECTID
-```
-
-#### Useful Examples
-Stop and remove all projects
+The command will try to stop the project `proc.Kill()` and then will remove the configuration file from `$HOME/.twitterfarm/{{$PROJECT_ID}}.yml`. It will NOT remove any data from your elasticsearch index.
 
 ```bash
-twitterfarm stop $(twitterfarm list -q)
-twitterfarm rm $(twitterfarm list -q)
+twitterfarm rm $PROJECT_ID
 ```
+
+## TO DO
+
+- [ ] Global Logger & Log Command
+- [ ] Twitter Streaming API Request Parameters
+- [ ] Twitter Streaming API User/Site
+- [ ] Elasticsearch Tweet Mappings
+- [ ] Before Save Pipe Script
 
 ## Contributing
 1. Fork it
@@ -206,8 +173,8 @@ twitterfarm rm $(twitterfarm list -q)
 5. Submit a pull request
 
 ## Credits
-- [urfave/cli](github.com/urfave/cli)
-- [olivere/elastic.v5](gopkg.in/olivere/elastic.v5)
-- [dghubble/go-twitter](github.com/dghubble/go-twitter)
-- [dghubble/oauth1](github.com/dghubble/oauth1)
-- [mitchellh/go-homedir](github.com/mitchellh/go-homedir)
+- ![urfave/cli](https://github.com/urfave/cli)
+- ![olivere/elastic.v5](https://github.com/olivere/elastic/tree/v5.0.38)
+- ![dghubble/go-twitter](https://github.com/dghubble/go-twitter)
+- ![dghubble/oauth1](https://github.com/dghubble/oauth1)
+- ![mitchellh/go-homedir](https://github.com/mitchellh/go-homedir)

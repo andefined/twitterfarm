@@ -6,7 +6,6 @@ go:
 env:
   global:
   - VERSION=$(cat VERSION)
-  - secure: museVjeFzXJbri37W9AcfaM+ztgkssHPThK8zz8pUHWXOK6uKCETIffFng0s/vLt4RbvB9PFZlMKeS9YwfMimcKPs/iZtYq95JxHwn4X19lKlgHxHFNqks6atisNSwn01/u2/8pyIDoBpMVznh+Zk7mvI4bdJlsey5y9wX3Z+aBlgO9j7Us1RO4+bUVQVq2m4Y8Q4KBPc2dhtfgIb0JOuIlIgOej+S+znJguOSlAiRtHOY3gl28iSFOxEKaJliAqlW1znAp8Pv8/IpaJ+rH64/41InFEmCFyNLL7laNqkhkYbacxqz+TTGa5AawNWkCUplB5WQsWEZYdZHn+ynNze6+sBvwV9xtLuv10wEI4r+v1d0VNZuDHZHKKRWnBzOSZ9i3QipoJe5ZnKJMgjkos7fUid6v62kJ739mEIALRvc2bdyfvzvRpvt8OPIXnkezNJY444Esx/p54rj4HGl1eAjyKnVRP27WF11tlt0AuhBXnNY798hS3YmqR7c4WOO3lY/mr0/jVisVwAEGCf1KgE4wpV6jbYznQdBcCp/8/j9Mfuwcp2+c6qKw9mzIux+P28blsaop+U/8Hfolic7020/uFoA/zmr6TaJMrh9Ewd3NZh69tGhT4fTb2QW9uBwlqyvRpVCJ2TYgxRlVhWJjcg16YUSGAmhtXRe7gD5Os26I=
 before_script:
 - go get -t -v ./...
 script:
@@ -21,7 +20,7 @@ deploy:
   provider: releases
   skip_cleanup: true
   api_key:
-    secure: "ZGb8JJhAxrnW7SoTIt+tkdmTm5NuCQ81js9dDM81AKBz1Pqz0iz9Y7LqzfgfNh1WfhOrKAQBaxFG8sjTW99MdKNcYU0DpnwVGt4XE043WrZjZZ/xjpbDEYyOQTFRBDQg/qz9q1qjHAlWjI8dJUORf7MgaXrbFsNoYRBK9j8YKWbYKOWSuTU5qxD8bZjp8z6xaKaE4Zcvjr9Ttzy4YLXoCnu+Pj/1W2zTHqajsG7OmyicjxCSRnrnGAxTXm3fd9oGTelbCSIpSk30Gi5y9o0+1ukdSBf2Gi2YXUaEgy8+/BDIZPgHMcYHa4wORl8EInCUBfaZgIn2gvQObsrQJRX6uF2vry/ZdsNb3qPQ8J/kRhZcTtCPKBGj4QWqplJuBGDov+xSWPVq+S/AS/gM4nqE08SD6v3tg0Ui0uf7ZCaYGq7wRJsbfGU3IN2yCJBAdOLwv6ixDthKXpES7O2srek66q86BJ4QkHFrywcqtYJNChLEAyZeuP5kor7B1vbcofldgYMMYi3eT9+qqsICp34Nhth3U8QTBCsEBnKrWDpgZSFj098kSqqeh1WMa37PZfB8AB64wCwuMZj1mePGS4b3xcsVW8+WyqwUXjSww6UWbfjh4IGZUFg60gZPnoAWGs/PQnLCaV5mwjtqNHdKZdAiYXuz7Xxb6vwqAmcjfuryLzg="
+    secure: ""
   file:
   - release/twitterfarm-v$VERSION-linux-amd64
   - release/twitterfarm-v$VERSION-darwin-amd64
