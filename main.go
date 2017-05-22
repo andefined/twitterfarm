@@ -143,6 +143,21 @@ func main() {
 			Usage:     "Execute a project",
 			Action:    commands.Exec,
 			ArgsUsage: `[project configuration file]`,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "drop",
+					Usage: "Drop tweets",
+				},
+				cli.BoolFlag{
+					Name:  "verbose",
+					Usage: "Verbose mode",
+				},
+				cli.IntFlag{
+					Name:  "limit",
+					Usage: "Exit when limit reached",
+					Value: -1,
+				},
+			},
 		},
 	}
 
