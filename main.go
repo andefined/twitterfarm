@@ -10,7 +10,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "twitterfarm"
-	app.Version = "0.0.2"
+	app.Version = "0.0.3"
 	app.Usage = "Collect data from Twitter"
 	app.Commands = []cli.Command{
 		{

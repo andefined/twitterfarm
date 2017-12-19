@@ -1,0 +1,14 @@
+project_name: twitterfarm
+builds:
+    - main: main.go
+      binary: twitterfarm
+      goos:
+        - windows
+        - darwin
+        - linux
+      goarch:
+        - amd64
+archive:
+    format: tar.gz
+release:
+    draft: false
